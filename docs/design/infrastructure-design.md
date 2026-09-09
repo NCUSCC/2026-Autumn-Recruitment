@@ -223,6 +223,7 @@ profile 的资源上限由平台维护。节点可以在上限内选择生命周
 - `basic-linux`：Shell、文件、进程、权限和本地 Git。
 - `c-cpp-cpu`：固定版本 GCC/Clang、CMake/Make、调试和 sanitizer 工具。
 - `python-cpu`：固定 Python 和基础科学计算包。
+- `cuda-kernel`：固定 CUDA Toolkit、`nvcc`、CUDA samples、Nsight CLI 和架构兼容矩阵。
 - `gpu-small`：固定 CUDA/ROCm/驱动兼容矩阵和小型 GPU 配额。
 - `hpc-adapter`：本地 MPI/OpenMP/性能工具或受控的远程 HPC 适配入口，不默认开放外部网络。
 - `ml-dl-cpu`、`ml-dl-gpu`：预置框架、数据和模型缓存，运行时只读。
@@ -524,7 +525,7 @@ profile 或 checker 发布前必须完成：
 
 ### P4：方向 profile
 
-- C/C++、Python、GPU、ML/DL 和 HPC profile。
+- C/C++、Python、CPU/GPU、CUDA、ML/DL 和 HPC profile。
 - 为每个方向建立独立资源、工具链和 checker 设计。
 - 进行资源压力、隔离、可重复性和清理测试。
 
@@ -556,3 +557,5 @@ profile 或 checker 发布前必须完成：
 - 任务可通过本地 seed 重现，checker 不依赖远程服务。
 - 结果通过 `CheckerResult` 返回，不能直接修改地图路线。
 - 先定义零基础新生可理解的渐进路线，再增加可选深度节点。
+
+CUDA 单独作为一个方向分支，而不是并入通用 CPU/GPU 分支：CPU/GPU 分支负责硬件和性能直觉，CUDA 分支负责 NVIDIA 编程模型、kernel 编写、内存层级、Tensor Core、Nsight 和架构特性。两者在“GPU 基础”节点汇合，CUDA 分支再向 ML/DL 算子优化和 HPC GPU 计算分流。这样可以让没有 NVIDIA GPU 的新生完成 CPU/GPU 基础路线，也避免把 CUDA 工具链和驱动要求隐藏在通用节点中。
