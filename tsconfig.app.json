@@ -15,7 +15,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@ncuscc/assessment-schema": ["packages/assessment-schema/src/index.ts"],
+      "@ncuscc/map-runtime": ["packages/map-runtime/src/index.ts"],
+      "@ncuscc/sandbox-contracts": ["packages/sandbox-contracts/src/index.ts"]
+    }
   },
-  "include": ["src"]
+  "include": ["apps/editor/src", "packages/*/src"]
 }

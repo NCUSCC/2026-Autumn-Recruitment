@@ -1,0 +1,12 @@
+{
+  "name": "@ncuscc/map-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ncuscc/assessment-schema": "0.1.0"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

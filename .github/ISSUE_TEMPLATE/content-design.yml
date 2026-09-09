@@ -1,0 +1,39 @@
+name: Assessment content design
+description: 讨论一个招新考核方向、地图分支或独立题目节点
+title: "design: "
+labels:
+  - content
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 教学/考核目标
+      description: 参与者完成后应该理解或能够完成什么？
+    validations:
+      required: true
+  - type: textarea
+    id: path
+    attributes:
+      label: 建议节点和分支
+      description: 描述前置、必修、可选、汇合和分流节点。
+    validations:
+      required: true
+  - type: textarea
+    id: sandbox
+    attributes:
+      label: Sandbox 与 Checker
+      description: 需要什么 profile、输入输出和可重复的通关条件？
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: 参考资料
+      description: 请给出公开、可核验的链接，并注明许可证或使用限制。
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: 内容安全
+      options:
+        - label: 方案不包含真实答案、隐藏测试、凭据或个人信息
+          required: true

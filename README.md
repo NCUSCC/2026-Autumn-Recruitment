@@ -1,33 +1,87 @@
-# 招新考核地图编辑器
+# NCUSCC 招新考核平台
 
-这是超算俱乐部 2026 秋季招新的地图编排器骨架，面向组织者和出题协作者。第一版只负责地图结构与节点元数据编辑，不运行 sandbox、不判题，也不包含具体关卡内容。
+南昌大学超算俱乐部（NCUSCC）的招新考核题目构建与运行框架。
 
-## 启动
+本项目帮助出题者定义独立题目节点、编排分支地图、配置 Sandbox 和 Checker，并在离线环境中验证题目结构。地图编辑器只是题目编排入口，不是项目本身的全部目标。
+
+> 当前版本处于早期工程化阶段：编辑器和 Sandbox 契约已有可运行原型，真实容器/microVM、在线评测和具体招新题内容仍在后续建设中。
+
+## 能做什么
+
+- 使用 React Flow 拖拽编排考核地图和分支。
+- 编辑节点的任务说明、提示、通关条件、重试策略和 Sandbox 引用。
+- 导入、导出和校验版本化的地图 JSON。
+- 使用离线 `MockSandboxAdapter` 验证 Sandbox 会话状态机与 `CheckerResult` 契约。
+- 为 Git、Linux、C/C++、HPC、CPU/GPU、CUDA、机器学习/深度学习等方向持续添加题目内容。
+
+## 当前边界
+
+当前仓库不启动真实 Sandbox，不连接 Kubernetes、远程 Git、外部网络或 HPC 集群。所有示例和测试都应能在本地、断网环境中重复运行。
+
+真实招新活动中的隐藏测试、参考答案、个人信息和凭据不得提交到公开内容目录。
+
+## 快速开始
+
+环境要求：Node.js 20 LTS 或更高版本、npm 10 或更高版本。
 
 ```bash
 npm install
 npm run dev
 ```
 
-打开终端输出的本地地址即可使用。生产构建使用 `npm run build`。
+浏览器打开 Vite 输出的本地地址即可使用题目编排器。
 
-## 目录模型
-
-- `data/maps/<map-id>/map.json`：地图拓扑、节点引用和画布位置。
-- `data/nodes/<node-id>/node.json`：独立节点元数据，第一版预留。
-- `data/catalog/categories.json`：阶段、方向和标签分类，第一版为空。
-- `docs/design/`：正式设计文档和实现计划。
-
-编辑器中的导入与导出使用稳定的 `MapDocument` JSON。浏览器草稿保存在本地存储，导出的 JSON 才是适合提交到 Git 的正式文件。
-
-## Sandbox 第一阶段
-
-`src/sandbox/` 当前只提供独立节点 sandbox 的契约、离线校验、会话状态机和内存 `MockSandboxAdapter`，用于验证地图运行器的调用边界。真实 Kubernetes、microVM、Terminal Gateway 和 checker 部署属于后续阶段；第一阶段不会启动容器，也不会连接外部网络。
-
-运行测试：
+提交前运行完整检查：
 
 ```bash
+npm run check
+```
+
+单独运行构建和测试：
+
+```bash
+npm run build
 npm test
 ```
 
-Sandbox 的正式边界和后续部署方案见 `docs/design/sandbox-design.md`，实现顺序见 `docs/design/sandbox-implementation-plan.md`。
+## 仓库结构
+
+```text
+apps/editor/                 # 题目地图编排 Web 应用
+packages/assessment-schema/  # Map/Node/Edge 等题目文档契约
+packages/map-runtime/        # 地图结构校验与运行辅助逻辑
+packages/sandbox-contracts/  # Sandbox、Session、CheckerResult 和 Mock
+content/                     # NCUSCC 的公开地图、节点和分类
+docs/                        # 架构、出题、运维和正式设计文档
+infra/                       # 后续 CI、镜像和运行环境配置
+.github/                     # CI、Issue/PR 模板与协作规范
+```
+
+详细边界见：[开源项目整理设计](docs/design/open-source-project-organization.md)。
+
+## 内容工作流
+
+1. 在 GitHub Issue 中讨论方向和题目节点目标。
+2. 在 `content/nodes/` 定义独立节点，在 `content/maps/` 编排地图。
+3. 使用 `assessment-schema` 和 `map-runtime` 校验文档。
+4. 为需要执行环境的节点声明 profile/Sandbox 引用和 Checker 契约。
+5. 通过编辑器导入/导出 JSON，提交可审查的内容变更。
+
+出题指南和 Sandbox 设计位于 [`docs/design/`](docs/design/)。
+
+## 参与贡献
+
+请先阅读：
+
+- [贡献指南](CONTRIBUTING.md)
+- [行为准则](CODE_OF_CONDUCT.md)
+- [安全策略](SECURITY.md)
+- [变更记录](CHANGELOG.md)
+
+方向设计、题目内容和平台代码应分开提交；所有改动必须通过 CI 的类型检查、测试和构建。
+
+## 许可证
+
+平台代码和仓库文档以 [Apache License 2.0](LICENSE) 发布。外部课程、图片、数据集和工具只保留其官方链接，并遵守各自许可证与署名要求。
+
+NCUSCC 是南昌大学超算俱乐部的组织标识；许可证不授予未经许可使用组织名称或标识的权利。

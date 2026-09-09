@@ -1,6 +1,6 @@
 import { AlertCircle, CheckCircle2, Info, LocateFixed, TriangleAlert } from 'lucide-react'
 import type { ReactNode } from 'react'
-import type { ValidationMessage } from '../types'
+import type { ValidationMessage } from '@ncuscc/assessment-schema'
 
 export function ValidationPanel({ messages, onLocate }: { messages: ValidationMessage[]; onLocate: (message: ValidationMessage) => void }) {
   const errors = messages.filter((message) => message.severity === 'error')

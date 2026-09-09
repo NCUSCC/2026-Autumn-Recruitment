@@ -2,7 +2,7 @@
 
 ## 1. 文档目的
 
-本文档把现有的地图编辑器和 sandbox 契约扩展为一套完整的基础设施层设计。它描述从节点资源包到可交互运行环境、终端连接、提交判定和资源回收的完整边界，供后续实现控制面、Kubernetes 部署、microVM runtime、终端网关和 checker 使用。
+本文档把题目平台的地图编排器和 Sandbox 契约扩展为一套完整的基础设施层设计。它描述从节点资源包到可交互运行环境、终端连接、提交判定和资源回收的完整边界，供后续实现控制面、Kubernetes 部署、microVM runtime、终端网关和 checker 使用。
 
 本文档仍然不包含具体关卡题目、答案、隐藏测试内容或参与者端地图产品设计。Git、Linux、C/C++、HPC、CPU/GPU、机器学习/深度学习会作为独立方向继续拆分设计。
 
@@ -72,7 +72,7 @@
 内容层是版本化、可审查的 Git 资源，不在运行时动态修改：
 
 ```text
-data/nodes/<node-id>/
+content/nodes/<node-id>/
   node.json
   public/                       # 参与者可见材料
   sandbox/spec.json             # SandboxSpec

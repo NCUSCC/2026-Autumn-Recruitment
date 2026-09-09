@@ -1,4 +1,4 @@
-import type { MapDocument, ValidationMessage } from '../types'
+import type { MapDocument, ValidationMessage } from '../../assessment-schema/src/types'
 
 export const validateMap = (map: MapDocument): ValidationMessage[] => {
   const messages: ValidationMessage[] = []

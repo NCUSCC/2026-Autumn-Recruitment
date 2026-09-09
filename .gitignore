@@ -2,3 +2,9 @@ node_modules/
 dist/
 .vite/
 *.local
+.DS_Store
+coverage/
+.env
+.env.*
+!.env.example
+docs/HPC_AI_性能优化社团招新考核方案.docx

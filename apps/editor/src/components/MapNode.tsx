@@ -1,6 +1,6 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { CircleDot, Flag, GitBranch, Milestone, Play, Sparkles } from 'lucide-react'
-import type { NodeType } from '../types'
+import type { NodeType } from '@ncuscc/assessment-schema'
 import { nodeTypeLabels } from '../lib/map'
 
 const icons = { start: Play, task: Sparkles, branch: GitBranch, checkpoint: Milestone, end: Flag }

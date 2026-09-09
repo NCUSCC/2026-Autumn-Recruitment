@@ -1,5 +1,5 @@
 import { Box, Flag, GitBranch, Milestone, Play, Plus } from 'lucide-react'
-import type { NodeType } from '../types'
+import type { NodeType } from '@ncuscc/assessment-schema'
 import { nodeTypeLabels } from '../lib/map'
 
 const palette: Array<{ type: NodeType; icon: typeof Plus; note: string }> = [

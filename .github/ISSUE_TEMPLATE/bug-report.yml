@@ -1,0 +1,36 @@
+name: Bug report
+description: 报告平台代码、编辑器或离线契约中的可复现问题
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请先搜索已有 Issue，并尽量提供最小复现。
+  - type: textarea
+    id: symptom
+    attributes:
+      label: 问题描述
+      description: 发生了什么？预期行为是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 请列出命令、输入文件和操作顺序。
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      placeholder: Node.js 20 / Windows 11 / commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志或截图
+      description: 请脱敏后粘贴，不要提交 token、个人信息或答案。

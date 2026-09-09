@@ -1,6 +1,6 @@
 import { Plus, Trash2, X } from 'lucide-react'
 import type { Edge, Node } from '@xyflow/react'
-import type { EdgeTrigger, MapEdge, MapNode, NodeType } from '../types'
+import type { EdgeTrigger, MapEdge, MapNode, NodeType } from '@ncuscc/assessment-schema'
 import { edgeTriggerLabels, nodeTypeLabels } from '../lib/map'
 
 interface PropertiesPanelProps {

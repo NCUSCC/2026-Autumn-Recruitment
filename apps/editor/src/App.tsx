@@ -5,15 +5,15 @@ import { NodePalette } from './components/NodePalette'
 import { PropertiesPanel } from './components/PropertiesPanel'
 import { Toolbar } from './components/Toolbar'
 import { ValidationPanel } from './components/ValidationPanel'
-import { createEdge, createNode, fromFlowEdges, fromFlowNodes, isMapDocument, toFlowEdges, toFlowNodes } from './lib/map'
-import { validateMap } from './lib/validation'
-import type { MapDocument, MapEdge, MapNode, NodeType, Selection, ValidationMessage } from './types'
+import { createEdge, createNode, isMapDocument, type MapDocument, type MapEdge, type MapNode, type NodeType, type Selection, type ValidationMessage } from '@ncuscc/assessment-schema'
+import { validateMap } from '@ncuscc/map-runtime'
+import { fromFlowEdges, fromFlowNodes, toFlowEdges, toFlowNodes } from './lib/map'
 
-const STORAGE_KEY = 'recruitment-map-editor:draft'
+const STORAGE_KEY = 'ncuscc-recruitment-assessment:draft'
 
 const emptyMap = (): MapDocument => ({
   schemaVersion: '1.0.0',
-  meta: { id: 'recruitment-map', name: '未命名招新地图', description: '', version: 1 },
+  meta: { id: 'ncuscc-recruitment-map', name: 'NCUSCC 招新考核示例地图', description: '', version: 1 },
   nodes: [],
   edges: [],
 })
