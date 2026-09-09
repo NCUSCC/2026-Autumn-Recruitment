@@ -20,7 +20,8 @@
     "paths": {
       "@ncuscc/assessment-schema": ["packages/assessment-schema/src/index.ts"],
       "@ncuscc/map-runtime": ["packages/map-runtime/src/index.ts"],
-      "@ncuscc/sandbox-contracts": ["packages/sandbox-contracts/src/index.ts"]
+      "@ncuscc/sandbox-contracts": ["packages/sandbox-contracts/src/index.ts"],
+      "@ncuscc/infrastructure": ["packages/infrastructure/src/index.ts"]
     }
   },
   "include": ["apps/editor/src", "packages/*/src"]

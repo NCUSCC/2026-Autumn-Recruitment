@@ -12,6 +12,7 @@
 - `packages/assessment-schema/`：题目文档类型和通用操作。
 - `packages/map-runtime/`：地图校验。
 - `packages/sandbox-contracts/`：现有 `src/sandbox` 的契约、状态机、Mock 和测试。
+- `packages/infrastructure/`：控制面、profile、terminal、snapshot、checker 和 API 参考实现。
 - `content/`：现有地图与 catalog 示例。
 - `docs/design/`：正式设计和本实施计划；不创建 `docs/superpowers/` 文档。
 - `.github/`、根目录规范文件和 `package.json`：开源协作与 CI。
@@ -25,6 +26,7 @@
 - 将 schema 类型与通用文档操作移入 `packages/assessment-schema/src`。
 - 将地图校验移入 `packages/map-runtime/src`。
 - 将 `src/sandbox` 移入 `packages/sandbox-contracts/src`，保留测试并修正导出。
+- 将远端基础设施参考实现移入 `packages/infrastructure/src`，并改为依赖 `@ncuscc/sandbox-contracts`。
 - 将 `data/catalog` 和 `data/maps` 移入 `content/catalogs` 和 `content/maps`。
 
 ### 任务 2：配置 TypeScript、Vite 和 npm workspace

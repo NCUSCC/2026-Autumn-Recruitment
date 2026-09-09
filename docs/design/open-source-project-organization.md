@@ -39,6 +39,7 @@ packages/
   assessment-schema/             # Map/Node/Edge/Metadata 等题目契约
   map-runtime/                   # 地图结构校验和运行辅助逻辑
   sandbox-contracts/             # Sandbox、Session、CheckerResult 契约和 Mock
+  infrastructure/                # 控制面、profile、terminal、snapshot、checker 参考实现
 
 content/
   catalogs/                      # 阶段、方向、标签和 profile 索引
@@ -76,6 +77,10 @@ infra/                           # CI、镜像和后续运行环境配置
 ### `apps/editor`
 
 只负责编辑器交互、React Flow 映射、表单和本地文件入口。它可以依赖上述 packages，但 packages 不得反向导入编辑器组件。
+
+### `@ncuscc/infrastructure`
+
+提供与真实控制面相同的 transport-neutral 替换边界，包括 profile/admission、session service、短期终端 token、`pty-v1`、snapshot、checker、controller、API facade、审计事件和内存指标。默认实现只用于本地验证，不直接连接 Kubernetes 或外部服务。
 
 ## 5. 内容版本与协作
 

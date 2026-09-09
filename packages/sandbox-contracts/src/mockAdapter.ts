@@ -167,6 +167,15 @@ export class MockSandboxAdapter implements SandboxAdapter {
     stored.session = transitionSession(stored.session, 'destroyed', this.now())
   }
 
+  async expire(sessionId: string): Promise<void> {
+    const stored = this.requireSession(sessionId)
+    if (stored.session.phase === 'expired' || stored.session.phase === 'destroyed') return
+    if (stored.session.phase !== 'ready' && stored.session.phase !== 'running') {
+      throw new SandboxTransitionError(stored.session.phase, 'expired')
+    }
+    stored.session = transitionSession(stored.session, 'expired', this.now())
+  }
+
   getSession(sessionId: string): SandboxSession | undefined {
     const stored = this.sessions.get(sessionId)
     return stored ? cloneSession(stored.session) : undefined

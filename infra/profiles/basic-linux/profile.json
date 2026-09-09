@@ -1,0 +1,21 @@
+{
+  "id": "basic-linux",
+  "version": "1",
+  "imageDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "runtimeClass": "kata",
+  "resources": {
+    "cpuMillis": 1000,
+    "memoryMiB": 1024,
+    "ephemeralStorageMiB": 2048,
+    "pids": 256
+  },
+  "tools": ["bash", "coreutils", "git"],
+  "network": "none",
+  "terminal": { "shell": "/bin/bash", "pty": true },
+  "limits": {
+    "maxLifetimeSeconds": 1800,
+    "idleTimeoutSeconds": 600,
+    "maxOutputBytes": 10485760,
+    "checkerTimeoutSeconds": 120
+  }
+}
