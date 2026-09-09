@@ -19,3 +19,15 @@ npm run dev
 - `docs/design/`：正式设计文档和实现计划。
 
 编辑器中的导入与导出使用稳定的 `MapDocument` JSON。浏览器草稿保存在本地存储，导出的 JSON 才是适合提交到 Git 的正式文件。
+
+## Sandbox 第一阶段
+
+`src/sandbox/` 当前只提供独立节点 sandbox 的契约、离线校验、会话状态机和内存 `MockSandboxAdapter`，用于验证地图运行器的调用边界。真实 Kubernetes、microVM、Terminal Gateway 和 checker 部署属于后续阶段；第一阶段不会启动容器，也不会连接外部网络。
+
+运行测试：
+
+```bash
+npm test
+```
+
+Sandbox 的正式边界和后续部署方案见 `docs/design/sandbox-design.md`，实现顺序见 `docs/design/sandbox-implementation-plan.md`。
