@@ -31,3 +31,7 @@ npm test
 ```
 
 Sandbox 的正式边界和后续部署方案见 `docs/design/sandbox-design.md`，实现顺序见 `docs/design/sandbox-implementation-plan.md`。
+
+## 基础设施层
+
+`src/infrastructure/` 提供与真实控制面相同的替换边界：profile registry/admission、session service 的幂等创建/提交/重试/销毁、短期终端 token 与 `pty-v1` 消息校验、冻结快照、checker timeout、控制器 reconcile、API facade 以及内存指标和审计事件。默认实现只使用内存存储，生产部署应将这些接口接到 PostgreSQL、对象存储、Kubernetes/Kata 和 Terminal Gateway；参与者环境始终要求不可变 profile、只读根文件系统和 `network: none`。

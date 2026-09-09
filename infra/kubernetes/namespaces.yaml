@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: recruitment-control
+  labels:
+    recruitment.ncuscc.org/plane: control
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: recruitment-runtime
+  labels:
+    recruitment.ncuscc.org/plane: runtime
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: recruitment-checker
+  labels:
+    recruitment.ncuscc.org/plane: checker

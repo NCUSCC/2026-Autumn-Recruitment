@@ -102,6 +102,8 @@ export interface SandboxAdapter {
   submit(sessionId: string): Promise<CheckerResult>
   reset(sessionId: string): Promise<SandboxSession>
   destroy(sessionId: string): Promise<void>
+  /** Optional control-plane expiry hook; adapters without it are force-destroyed. */
+  expire?(sessionId: string): Promise<void>
   getSession(sessionId: string): SandboxSession | undefined
 }
 
