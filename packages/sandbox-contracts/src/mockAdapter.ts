@@ -176,6 +176,12 @@ export class MockSandboxAdapter implements SandboxAdapter {
     stored.session = transitionSession(stored.session, 'expired', this.now())
   }
 
+  async touch(sessionId: string, at: string): Promise<void> {
+    const stored = this.requireSession(sessionId)
+    if (stored.session.phase !== 'ready' && stored.session.phase !== 'running') throw new SandboxTransitionError(stored.session.phase, 'running')
+    stored.session = { ...stored.session, lastActivityAt: at }
+  }
+
   getSession(sessionId: string): SandboxSession | undefined {
     const stored = this.sessions.get(sessionId)
     return stored ? cloneSession(stored.session) : undefined

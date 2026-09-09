@@ -104,6 +104,7 @@ export interface SandboxAdapter {
   destroy(sessionId: string): Promise<void>
   /** Optional control-plane expiry hook; adapters without it are force-destroyed. */
   expire?(sessionId: string): Promise<void>
+  touch?(sessionId: string, at: string): Promise<void>
   getSession(sessionId: string): SandboxSession | undefined
 }
 

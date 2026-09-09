@@ -15,7 +15,8 @@ export interface TerminalConnection {
 export class InMemoryTerminalGateway {
   private readonly connections = new Map<string, { sessionId: string; participantRef: string; closed: boolean }>()
   private readonly outputBytes = new Map<string, number>()
-  constructor(private readonly service: SessionService, private readonly tokens: TerminalTokenService, private readonly maxConnections = 1, private readonly idFactory: () => string = () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)) {}
+  private readonly outputWindows = new Map<string, { startedAt: number; bytes: number }>()
+  constructor(private readonly service: SessionService, private readonly tokens: TerminalTokenService, private readonly maxConnections = 1, private readonly idFactory: () => string = () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2), private readonly maxOutputBytesPerSecond = 1024 * 1024) {}
   async connect(token: string, sessionId: string, participantRef: string): Promise<TerminalConnection> {
     this.tokens.verify(token, sessionId, participantRef)
     const session = this.service.get(sessionId)
@@ -27,6 +28,7 @@ export class InMemoryTerminalGateway {
     const state = { sessionId, participantRef, closed: false }
     this.connections.set(id, state)
     this.outputBytes.set(id, 0)
+    this.outputWindows.set(id, { startedAt: Date.now(), bytes: 0 })
     let connection: TerminalConnection
     connection = {
       id, sessionId,
@@ -35,7 +37,9 @@ export class InMemoryTerminalGateway {
         if (state.closed) throw new Error('终端连接已关闭')
         const current = this.service.get(sessionId)
         if (!current || !['ready', 'running'].includes(current.session.phase)) { state.closed = true; throw new Error('session 已冻结，拒绝终端写入') }
-        return parsePtyMessage(raw)
+        const message = parsePtyMessage(raw)
+        if (message.type === 'input' || message.type === 'resize' || message.type === 'heartbeat') this.service.touch(sessionId, participantRef)
+        return message
       },
       close: (reason) => { state.closed = true; this.tokens.revokeSession(reason === 'submitted' || reason === 'expired' || reason === 'destroyed' ? sessionId : '') },
     }
@@ -47,6 +51,13 @@ export class InMemoryTerminalGateway {
     if (!state || state.closed) throw new Error('终端连接已关闭')
     const next = (this.outputBytes.get(connectionId) ?? 0) + new TextEncoder().encode(data).byteLength
     if (next > maxOutputBytes) { state.closed = true; throw new Error('终端输出超过 profile 配额') }
+    const now = Date.now()
+    const window = this.outputWindows.get(connectionId) ?? { startedAt: now, bytes: 0 }
+    if (now - window.startedAt >= 1000) { window.startedAt = now; window.bytes = 0 }
+    const bytes = new TextEncoder().encode(data).byteLength
+    if (window.bytes + bytes > this.maxOutputBytesPerSecond) { state.closed = true; throw new Error('终端输出速率超过 profile 配额') }
+    window.bytes += bytes
+    this.outputWindows.set(connectionId, window)
     this.outputBytes.set(connectionId, next)
     return { type: 'output', data }
   }

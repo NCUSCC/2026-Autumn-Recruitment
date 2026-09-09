@@ -1,4 +1,4 @@
-import type { ProfileRegistry, ResourceLimits, SandboxProfile } from './types'
+import type { ProfileRegistry, ProfileVerificationPolicy, ResourceLimits, SandboxProfile } from './types'
 import type { ValidationIssue } from '@ncuscc/sandbox-contracts'
 import { InfrastructureError } from './errors'
 
@@ -12,6 +12,7 @@ export const validateProfile = (value: unknown): ValidationIssue[] => {
   for (const key of ['id', 'version', 'runtimeClass']) if (typeof profile[key] !== 'string' || !(profile[key] as string).trim()) issues.push({ path: key, message: '不能为空' })
   if (!digest(profile.imageDigest)) issues.push({ path: 'imageDigest', message: '必须是完整 sha256 digest' })
   if (profile.network !== 'none') issues.push({ path: 'network', message: '第一阶段只允许 none' })
+  if (!Array.isArray(profile.tools) || profile.tools.some((tool) => typeof tool !== 'string' || !tool.trim())) issues.push({ path: 'tools', message: '必须是非空字符串数组' })
   const resources = profile.resources as Record<string, unknown> | undefined
   if (!resources || typeof resources !== 'object') issues.push({ path: 'resources', message: '必须是对象' })
   else for (const key of ['cpuMillis', 'memoryMiB', 'ephemeralStorageMiB', 'pids']) if (!positive(resources[key])) issues.push({ path: `resources.${key}`, message: '必须是正整数' })
@@ -29,7 +30,10 @@ export class InMemoryProfileRegistry implements ProfileRegistry {
   private readonly profiles = new Map<string, SandboxProfile>()
   constructor(profiles: SandboxProfile[] = []) { profiles.forEach((profile) => this.register(profile)) }
   register(profile: SandboxProfile): void {
-    this.verify(profile)
+    const issues = validateProfile(profile)
+    if (issues.length) throw new InfrastructureError(`profile 校验失败: ${issues.map((item) => `${item.path} ${item.message}`).join('; ')}`, 'PROFILE_INVALID')
+    this.verify(profile.imageDigest, { allowedRuntimeClasses: new Set(['kata', 'firecracker']), runtimeClass: profile.runtimeClass, requireSignature: false, requireSbom: false, signature: profile.signature, sbomRef: profile.sbomRef })
+    if (profile.tools.length === 0) throw new InfrastructureError('profile 至少需要声明一个预置工具', 'PROFILE_POLICY_REJECTED')
     const ref = `${profile.id}@${profile.version}`
     if (this.profiles.has(ref)) throw new InfrastructureError(`profile 已存在: ${ref}`, 'PROFILE_DUPLICATE')
     this.profiles.set(ref, Object.freeze({ ...profile, resources: { ...profile.resources }, limits: { ...profile.limits }, tools: [...profile.tools] }))
@@ -39,12 +43,17 @@ export class InMemoryProfileRegistry implements ProfileRegistry {
     if (!profile) throw new InfrastructureError(`profile 未获批准或不存在: ${ref}`, 'PROFILE_NOT_FOUND')
     return profile
   }
-  verify(profile: SandboxProfile): void {
-    const issues = validateProfile(profile)
-    if (issues.length) throw new InfrastructureError(`profile 校验失败: ${issues.map((item) => `${item.path} ${item.message}`).join('; ')}`, 'PROFILE_INVALID')
-    if (profile.imageDigest.includes('latest')) throw new InfrastructureError('profile 禁止使用浮动镜像 tag', 'PROFILE_POLICY_REJECTED')
-    if (!['kata', 'firecracker'].includes(profile.runtimeClass)) throw new InfrastructureError('profile runtimeClass 未获批准', 'PROFILE_POLICY_REJECTED')
-    if (profile.tools.length === 0) throw new InfrastructureError('profile 至少需要声明一个预置工具', 'PROFILE_POLICY_REJECTED')
+  verify(imageDigestOrProfile: string | SandboxProfile, policy: ProfileVerificationPolicy = {}): void {
+    const imageDigest = typeof imageDigestOrProfile === 'string' ? imageDigestOrProfile : imageDigestOrProfile.imageDigest
+    if (typeof imageDigestOrProfile !== 'string') {
+      policy = { ...policy, runtimeClass: policy.runtimeClass ?? imageDigestOrProfile.runtimeClass, signature: policy.signature ?? imageDigestOrProfile.signature, sbomRef: policy.sbomRef ?? imageDigestOrProfile.sbomRef }
+    }
+    if (!digest(imageDigest)) throw new InfrastructureError('profile 必须使用完整 sha256 digest', 'PROFILE_POLICY_REJECTED')
+    if (policy.allowedDigests && !policy.allowedDigests.has(imageDigest)) throw new InfrastructureError('profile 镜像 digest 不在 allowlist', 'PROFILE_POLICY_REJECTED')
+    if (policy.allowedRuntimeClasses && policy.allowedRuntimeClasses.size === 0) throw new InfrastructureError('runtimeClass allowlist 不能为空', 'PROFILE_POLICY_REJECTED')
+    if (policy.allowedRuntimeClasses && (!policy.runtimeClass || !policy.allowedRuntimeClasses.has(policy.runtimeClass))) throw new InfrastructureError('profile runtimeClass 未获批准', 'PROFILE_POLICY_REJECTED')
+    if (policy.requireSignature && !policy.signature) throw new InfrastructureError('profile 缺少镜像签名', 'PROFILE_POLICY_REJECTED')
+    if (policy.requireSbom && !policy.sbomRef) throw new InfrastructureError('profile 缺少 SBOM 引用', 'PROFILE_POLICY_REJECTED')
   }
 }
 

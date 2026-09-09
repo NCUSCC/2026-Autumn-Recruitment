@@ -26,6 +26,18 @@ export interface SandboxProfile {
   network: 'none'
   terminal: { shell: string; pty: boolean }
   limits: ProfileLimits
+  signature?: string
+  sbomRef?: string
+}
+
+export interface ProfileVerificationPolicy {
+  allowedDigests?: ReadonlySet<string>
+  allowedRuntimeClasses?: ReadonlySet<string>
+  runtimeClass?: string
+  requireSignature?: boolean
+  requireSbom?: boolean
+  signature?: string
+  sbomRef?: string
 }
 
 export interface SessionRequest {
@@ -57,12 +69,12 @@ export interface FrozenWorkspace {
 }
 
 export interface CheckerAdapter {
-  check(workspace: FrozenWorkspace, checkerRef: string, timeoutSeconds: number): Promise<CheckerResult>
+  check(workspace: FrozenWorkspace, checkerRef: string, timeoutSeconds?: number): Promise<CheckerResult>
 }
 
 export interface ProfileRegistry {
   resolve(ref: string): SandboxProfile
-  verify(profile: SandboxProfile): void
+  verify(imageDigestOrProfile: string | SandboxProfile, policy?: ProfileVerificationPolicy): void
   register(profile: SandboxProfile): void
 }
 
@@ -110,6 +122,8 @@ export interface SessionServiceOptions {
   idFactory?: () => string
   tokenTtlSeconds?: number
   audit?: (event: AuditEvent) => void
+  store?: import('./store').SessionStore
+  observability?: import('./observability').InMemoryObservability
 }
 
 export interface SessionService {
@@ -120,4 +134,5 @@ export interface SessionService {
   reset(sessionId: string, idempotencyKey: string): Promise<PublicSession>
   destroy(sessionId: string, idempotencyKey: string): Promise<void>
   expire(now?: string): Promise<string[]>
+  touch(sessionId: string, participantRef: string, at?: string): void
 }

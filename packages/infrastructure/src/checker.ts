@@ -3,7 +3,7 @@ import { validateCheckerResult, SandboxValidationError } from '@ncuscc/sandbox-c
 
 export class FunctionCheckerAdapter implements CheckerAdapter {
   constructor(private readonly fn: (workspace: FrozenWorkspace, checkerRef: string) => CheckerResult | Promise<CheckerResult>) {}
-  async check(workspace: FrozenWorkspace, checkerRef: string, _timeoutSeconds: number): Promise<CheckerResult> {
+  async check(workspace: FrozenWorkspace, checkerRef: string, _timeoutSeconds = 0): Promise<CheckerResult> {
     const result = await this.fn(workspace, checkerRef)
     const issues = validateCheckerResult(result)
     if (issues.length) throw new SandboxValidationError(issues)

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sandbox-agent
+  namespace: recruitment-runtime
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: sandbox-limits
+  namespace: recruitment-runtime
+spec:
+  limits:
+    - type: Container
+      defaultRequest:
+        cpu: 100m
+        memory: 128Mi
+      default:
+        cpu: "2"
+        memory: 2Gi
+      max:
+        cpu: "4"
+        memory: 4Gi
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sandbox-pdb
+  namespace: recruitment-runtime
+spec:
+  maxUnavailable: 100%
+  selector:
+    matchLabels:
+      recruitment.ncuscc.org/workload: sandbox
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: checker-deny-all
+  namespace: recruitment-checker
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  ingress: []
+  egress: []
